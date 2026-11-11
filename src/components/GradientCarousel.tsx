@@ -11,7 +11,6 @@ import { Link } from 'react-router-dom'
 import { projects } from '../data/projects'
 import '../styles/gradient-carousel.css'
 
-const initialPosition = projects.length * 3
 const artworkClasses: Record<string, string> = {
   'jaswant-telecom': 'gradient-carousel__art--jaswant',
   'northline-air': 'gradient-carousel__art--air',
@@ -46,20 +45,16 @@ function ProjectArtwork({ project }: { project: (typeof projects)[number] }) {
 
 export function GradientCarousel() {
   const stageRef = useRef<HTMLDivElement>(null)
-  const pointerRef = useRef<{ x: number; trackX: number; id: number } | null>(null)
+  const pointerRef = useRef<{ x: number; dragX: number; id: number } | null>(null)
   const draggedRef = useRef(false)
   const reduceMotion = useReducedMotion()
-  const [activePosition, setActivePosition] = useState(initialPosition)
+  const [activePosition, setActivePosition] = useState(0)
   const [stageWidth, setStageWidth] = useState(1120)
 
   const cardWidth = Math.min(354, Math.max(230, stageWidth * 0.295))
   const cardGap = 26
   const step = cardWidth + cardGap
-  const targetX = -(activePosition * step + cardWidth / 2)
-  const trackX = useMotionValue(
-    -(initialPosition * (Math.min(354, Math.max(230, 1120 * 0.295)) + cardGap) +
-      Math.min(354, Math.max(230, 1120 * 0.295)) / 2),
-  )
+  const dragX = useMotionValue(0)
   const activeProject = projectAt(activePosition)
   const visiblePositions = Array.from({ length: 5 }, (_, index) => activePosition + index - 2)
 
@@ -76,16 +71,23 @@ export function GradientCarousel() {
     return () => observer.disconnect()
   }, [])
 
-  useEffect(() => {
-    const controls = animate(trackX, targetX, reduceMotion
-      ? { duration: 0 }
-      : { type: 'spring', stiffness: 105, damping: 24, mass: 0.92 })
-    return () => controls.stop()
-  }, [activePosition, targetX, reduceMotion, trackX])
+  const settleDrag = () => {
+    animate(
+      dragX,
+      0,
+      reduceMotion
+        ? { duration: 0 }
+        : { type: 'spring', stiffness: 220, damping: 28, mass: 0.7 },
+    )
+  }
 
-  const goTo = (position: number) => setActivePosition(position)
-  const goPrevious = () => setActivePosition((position) => position - 1)
-  const goNext = () => setActivePosition((position) => position + 1)
+  const goTo = (position: number) => {
+    setActivePosition(position)
+    settleDrag()
+  }
+
+  const goPrevious = () => goTo(activePosition - 1)
+  const goNext = () => goTo(activePosition + 1)
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return
@@ -93,11 +95,11 @@ export function GradientCarousel() {
     event.currentTarget.setPointerCapture(event.pointerId)
     pointerRef.current = {
       x: event.clientX,
-      trackX: trackX.get(),
+      dragX: dragX.get(),
       id: event.pointerId,
     }
     draggedRef.current = false
-    trackX.stop()
+    dragX.stop()
   }
 
   const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -105,15 +107,8 @@ export function GradientCarousel() {
     if (!pointer || pointer.id !== event.pointerId) return
 
     const distance = event.clientX - pointer.x
-    if (Math.abs(distance) > 5) draggedRef.current = true
-    trackX.set(pointer.trackX + distance)
-  }
-
-  const settleTrack = () => {
-    const controls = animate(trackX, targetX, reduceMotion
-      ? { duration: 0 }
-      : { type: 'spring', stiffness: 105, damping: 24, mass: 0.92 })
-    return controls
+    if (Math.abs(distance) > 7) draggedRef.current = true
+    dragX.set(pointer.dragX + distance)
   }
 
   const handlePointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -123,18 +118,17 @@ export function GradientCarousel() {
     const distance = event.clientX - pointer.x
     pointerRef.current = null
 
-    if (Math.abs(distance) > Math.max(58, step * 0.19)) {
-      const travelledCards = Math.max(1, Math.round(Math.abs(distance) / step))
-      const direction = distance < 0 ? 1 : -1
-      setActivePosition((position) => position + direction * Math.min(travelledCards, 2))
-    } else {
-      settleTrack()
+    if (Math.abs(distance) > Math.max(54, step * 0.16)) {
+      const count = Math.max(1, Math.min(3, Math.round(Math.abs(distance) / step)))
+      setActivePosition((position) => position + (distance < 0 ? count : -count))
     }
+
+    settleDrag()
   }
 
   const handlePointerCancel = () => {
     pointerRef.current = null
-    settleTrack()
+    settleDrag()
   }
 
   const cssVars = {
@@ -180,10 +174,7 @@ export function GradientCarousel() {
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerCancel}
       >
-        <motion.div
-          className="gradient-carousel__track"
-          style={{ x: trackX, y: -cardWidth / 2, '--card-gap': `${cardGap}px` } as CSSProperties}
-        >
+        <motion.div className="gradient-carousel__track" style={{ x: dragX }}>
           {visiblePositions.map((virtualPosition) => {
             const offset = virtualPosition - activePosition
             const project = projectAt(virtualPosition)
@@ -197,15 +188,19 @@ export function GradientCarousel() {
                 className={`gradient-carousel__card ${distance === 0 ? 'is-active' : ''}`}
                 style={{
                   width: cardWidth,
+                  height: cardWidth,
+                  marginLeft: -cardWidth / 2,
+                  marginTop: -cardWidth / 2,
                   zIndex: 10 - distance,
                 }}
                 initial={false}
                 animate={{
+                  x: offset * step,
                   rotateY: offset * -19,
                   rotateZ: offset === 0 ? 0 : offset * -1.2,
                   scale,
                   z: -distance * 46,
-                  opacity: distance === 2 ? 0.72 : 1,
+                  opacity: 1,
                 }}
                 transition={reduceMotion
                   ? { duration: 0 }
@@ -238,21 +233,23 @@ export function GradientCarousel() {
         </button>
 
         <div className="gradient-carousel__pagination" aria-label="Choose a project">
-          {projects.map((project, index) => (
-            <button
-              key={project.slug}
-              type="button"
-              className={`gradient-carousel__dot ${projectAt(activePosition).slug === project.slug ? 'is-active' : ''}`}
-              onClick={() => {
-                const currentIndex = ((activePosition % projects.length) + projects.length) % projects.length
-                const forward = (index - currentIndex + projects.length) % projects.length
-                const backward = forward - projects.length
-                goTo(activePosition + (Math.abs(forward) <= Math.abs(backward) ? forward : backward))
-              }}
-              aria-label={`Show ${project.name}`}
-              aria-current={projectAt(activePosition).slug === project.slug ? 'true' : undefined}
-            />
-          ))}
+          {projects.map((project, index) => {
+            const selectedIndex = ((activePosition % projects.length) + projects.length) % projects.length
+            return (
+              <button
+                key={project.slug}
+                type="button"
+                className={`gradient-carousel__dot ${selectedIndex === index ? 'is-active' : ''}`}
+                onClick={() => {
+                  const forward = (index - selectedIndex + projects.length) % projects.length
+                  const backward = forward - projects.length
+                  goTo(activePosition + (Math.abs(forward) <= Math.abs(backward) ? forward : backward))
+                }}
+                aria-label={`Show ${project.name}`}
+                aria-current={selectedIndex === index ? 'true' : undefined}
+              />
+            )
+          })}
         </div>
 
         <button

@@ -65,10 +65,16 @@
   box-shadow: 0 28px 80px -38px rgb(0 0 0 / 82%);
   transform-style: preserve-3d;
   backface-visibility: hidden;
+  transform-origin: center center;
   cursor: pointer;
   pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
-  will-change: transform;
+  will-change: transform, opacity;
+  transition:
+    transform 680ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 500ms ease,
+    border-color 500ms ease,
+    box-shadow 500ms ease;
 }
 
 .gradient-carousel__card.is-active {
@@ -492,4 +498,20 @@
 
 .gradient-carousel__card {
   transform-origin: center center;
+}
+
+
+.gradient-carousel__stage {
+  overscroll-behavior: contain;
+}
+
+.gradient-carousel__track {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradient-carousel__card {
+    transition: none;
+  }
 }

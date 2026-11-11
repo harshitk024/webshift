@@ -515,3 +515,19 @@
     transition: none;
   }
 }
+
+
+.gradient-carousel__stage {
+  overscroll-behavior: contain;
+}
+
+.gradient-carousel__track {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradient-carousel__card {
+    transition: none;
+  }
+}

@@ -12,6 +12,9 @@ dist
 dist-ssr
 
 # Local environment files and secrets
+.env
+.env.*
+!.env.example
 .env.local
 .env.*.local
 *.local

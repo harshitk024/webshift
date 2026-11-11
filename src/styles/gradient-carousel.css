@@ -42,16 +42,19 @@
 
 .gradient-carousel__track {
   position: absolute;
-  inset: 0;
+  top: 50%;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--carousel-card-gap, 26px);
+  width: max-content;
   transform-style: preserve-3d;
   will-change: transform;
   pointer-events: none;
 }
 
 .gradient-carousel__card {
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  position: relative;
   display: block;
   flex: 0 0 auto;
   overflow: hidden;
@@ -475,4 +478,18 @@
   .gradient-carousel__link {
     transition: none;
   }
+}
+
+
+/* The whole row glides as one surface; cards only animate their 3D depth. */
+.gradient-carousel__stage {
+  overscroll-behavior: contain;
+}
+
+.gradient-carousel__track {
+  transform-style: preserve-3d;
+}
+
+.gradient-carousel__card {
+  transform-origin: center center;
 }

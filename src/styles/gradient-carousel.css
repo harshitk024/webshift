@@ -42,21 +42,18 @@
 
 .gradient-carousel__track {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  display: flex;
-  align-items: center;
-  gap: var(--card-gap, 26px);
-  width: max-content;
+  inset: 0;
   transform-style: preserve-3d;
   will-change: transform;
+  pointer-events: none;
 }
 
 .gradient-carousel__card {
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
   display: block;
   flex: 0 0 auto;
-  aspect-ratio: 1 / 1;
   overflow: hidden;
   padding: 0;
   border: 1px solid rgb(255 255 255 / 13%);
@@ -66,6 +63,7 @@
   transform-style: preserve-3d;
   backface-visibility: hidden;
   cursor: pointer;
+  pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
   will-change: transform;
 }

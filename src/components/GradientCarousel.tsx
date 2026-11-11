@@ -14,6 +14,9 @@ import '../styles/gradient-carousel.css'
 
 const INITIAL_INDEX = 30
 const TRACK_ITEMS = 61
+const REBASE_OFFSET = 18
+const REBASE_HIGH = 42
+const REBASE_LOW = 18
 const ARTWORKS = {
   'jaswant-telecom': 'gradient-carousel__art--jaswant',
   'northline-air': 'gradient-carousel__art--air',
@@ -50,6 +53,7 @@ function ProjectArtwork({ project }: { project: (typeof projects)[number] }) {
 
 export function GradientCarousel() {
   const stageRef = useRef<HTMLDivElement>(null)
+  const animationVersion = useRef(0)
   const pointerRef = useRef<{
     id: number
     startX: number
@@ -85,19 +89,36 @@ export function GradientCarousel() {
   }, [])
 
   useEffect(() => {
+    const version = ++animationVersion.current
     const controls = animate(
       trackX,
       targetX,
       reduceMotion
         ? { duration: 0 }
-        : { type: 'spring', stiffness: 82, damping: 23, mass: 1.05 },
+        : { type: 'spring', stiffness: 145, damping: 27, mass: 0.82 },
     )
-    return () => controls.stop()
-  }, [activePosition, targetX, reduceMotion, trackX])
+
+    void controls.then(() => {
+      if (version !== animationVersion.current) return
+
+      // Rebase by a multiple of three: the visible artwork sequence remains identical.
+      if (activePosition >= REBASE_HIGH) {
+        trackX.jump(targetX + REBASE_OFFSET * step)
+        setActivePosition(activePosition - REBASE_OFFSET)
+      } else if (activePosition <= REBASE_LOW) {
+        trackX.jump(targetX - REBASE_OFFSET * step)
+        setActivePosition(activePosition + REBASE_OFFSET)
+      }
+    })
+
+    return () => {
+      animationVersion.current += 1
+      controls.stop()
+    }
+  }, [activePosition, targetX, reduceMotion, trackX, step])
 
   const goTo = (position: number) => {
-    const safePosition = Math.max(2, Math.min(TRACK_ITEMS - 3, position))
-    setActivePosition(safePosition)
+    setActivePosition(Math.max(0, Math.min(TRACK_ITEMS - 1, position)))
   }
 
   const goPrevious = () => goTo(activePosition - 1)
@@ -141,8 +162,12 @@ export function GradientCarousel() {
 
     const distance = event.clientX - pointer.startX
     const projectedX = trackX.get() + pointer.velocity * 180
-    const projectedIndex = Math.round(
-      (stageWidth / 2 - cardWidth / 2 - projectedX) / step,
+    const projectedIndex = Math.max(
+      2,
+      Math.min(
+        TRACK_ITEMS - 3,
+        Math.round((stageWidth / 2 - cardWidth / 2 - projectedX) / step),
+      ),
     )
 
     pointerRef.current = null
@@ -156,7 +181,7 @@ export function GradientCarousel() {
         targetX,
         reduceMotion
           ? { duration: 0 }
-          : { type: 'spring', stiffness: 82, damping: 23, mass: 1.05 },
+          : { type: 'spring', stiffness: 145, damping: 27, mass: 0.82 },
       )
       controls.then(() => {
         draggedRef.current = false
@@ -171,7 +196,7 @@ export function GradientCarousel() {
       targetX,
       reduceMotion
         ? { duration: 0 }
-        : { type: 'spring', stiffness: 82, damping: 23, mass: 1.05 },
+        : { type: 'spring', stiffness: 145, damping: 27, mass: 0.82 },
     )
     controls.then(() => {
       draggedRef.current = false
@@ -186,7 +211,7 @@ export function GradientCarousel() {
 
     event.preventDefault()
     const now = performance.now()
-    if (now - lastWheelRef.current < 480) return
+    if (now - lastWheelRef.current < 380) return
     lastWheelRef.current = now
 
     if (delta > 0) goNext()
@@ -257,34 +282,28 @@ export function GradientCarousel() {
             const distance = Math.abs(offset)
             const scale = distance === 0 ? 1 : distance === 1 ? 0.92 : distance === 2 ? 0.84 : 0.78
 
+            const cardStyle = {
+              width: cardWidth,
+              height: cardWidth,
+              zIndex: 20 - distance,
+              opacity: distance > 3 ? 0 : distance === 3 ? 0.58 : 1,
+              pointerEvents: distance > 2 ? 'none' : 'auto',
+              transform: `translateZ(-${distance * 34}px) rotateY(${offset * -15}deg) rotateZ(${offset === 0 ? 0 : offset * -0.8}deg) scale(${scale})`,
+            } as CSSProperties
+
             return (
-              <motion.button
+              <button
                 key={index}
                 type="button"
                 className={`gradient-carousel__card ${distance === 0 ? 'is-active' : ''}`}
-                style={{
-                  width: cardWidth,
-                  height: cardWidth,
-                  zIndex: 20 - distance,
-                }}
-                initial={false}
-                animate={{
-                  rotateY: offset * -15,
-                  rotateZ: offset === 0 ? 0 : offset * -0.8,
-                  scale,
-                  z: -distance * 34,
-                  opacity: distance > 3 ? 0 : distance === 3 ? 0.58 : 1,
-                }}
-                transition={reduceMotion
-                  ? { duration: 0 }
-                  : { type: 'spring', stiffness: 105, damping: 25, mass: 1 }}
+                style={cardStyle}
                 aria-label={`${project.name}, ${distance === 0 ? 'selected' : 'select project'}`}
                 aria-pressed={distance === 0}
                 onClick={() => selectPosition(index)}
                 tabIndex={distance <= 2 ? 0 : -1}
               >
                 <ProjectArtwork project={project} />
-              </motion.button>
+              </button>
             )
           })}
         </motion.div>

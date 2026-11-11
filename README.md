@@ -44,7 +44,7 @@ Design decisions live in `DESIGN_SPEC.md`.
 
 ## React Bits Pro
 
-The shadcn registry configuration is in `components.json`. It registers both React Bits Pro registries and reads the authorization token from `REACTBITS_LICENSE_KEY`.
+The shadcn registry configuration is in `components.json`. It registers both React Bits Pro registries and resolves the authorization token from `REACTBITS_LICENSE_KEY`.
 
 1. Copy `.env.example` to `.env.local`.
 2. Replace the placeholder with your React Bits Pro license key. Keep `.env.local` local; it is ignored by Git.
@@ -54,7 +54,7 @@ The shadcn registry configuration is in `components.json`. It registers both Rea
 npx shadcn@latest add @reactbits-starter/gradient-carousel-tw
 ```
 
-The installed component is expected at `src/components/react-bits/gradient-carousel.tsx`. The `@` alias and `src/lib/utils.ts` helper are configured for its imports.
+The project has the `@` source alias and a shared `cn` helper ready for registry components. The CLI reports the installed component path; import from that generated path when wiring it into a section.
 
 ## Configure before launch
 

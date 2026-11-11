@@ -12,26 +12,24 @@ import { Link } from 'react-router-dom'
 import { projects } from '../data/projects'
 import '../styles/gradient-carousel.css'
 
-const INITIAL_INDEX = 30
-const TRACK_ITEMS = 61
-const REBASE_OFFSET = 18
-const REBASE_HIGH = 42
-const REBASE_LOW = 18
-const ARTWORKS = {
+const INITIAL_SLOT = 15
+const TRACK_ITEMS = 31
+const REBASE_STEP = 9
+const REBASE_HIGH = 21
+const REBASE_LOW = 9
+const ARTWORKS: Record<string, string> = {
   'jaswant-telecom': 'gradient-carousel__art--jaswant',
   'northline-air': 'gradient-carousel__art--air',
   'helio-field-solar': 'gradient-carousel__art--solar',
-} as const
+}
 
 function projectAt(position: number) {
   return projects[((position % projects.length) + projects.length) % projects.length]
 }
 
 function ProjectArtwork({ project }: { project: (typeof projects)[number] }) {
-  const artworkClass = ARTWORKS[project.slug as keyof typeof ARTWORKS]
-
   return (
-    <div className={`gradient-carousel__art ${artworkClass}`}>
+    <div className={`gradient-carousel__art ${ARTWORKS[project.slug] ?? ''}`}>
       <div className="gradient-carousel__art-grain" aria-hidden="true" />
       <span className="gradient-carousel__art-shape gradient-carousel__art-shape--orb" aria-hidden="true" />
       <span className="gradient-carousel__art-shape gradient-carousel__art-shape--ring" aria-hidden="true" />
@@ -53,7 +51,6 @@ function ProjectArtwork({ project }: { project: (typeof projects)[number] }) {
 
 export function GradientCarousel() {
   const stageRef = useRef<HTMLDivElement>(null)
-  const animationVersion = useRef(0)
   const pointerRef = useRef<{
     id: number
     startX: number
@@ -65,14 +62,18 @@ export function GradientCarousel() {
   const draggedRef = useRef(false)
   const lastWheelRef = useRef(0)
   const reduceMotion = useReducedMotion()
-  const [activePosition, setActivePosition] = useState(INITIAL_INDEX)
+  const [windowState, setWindowState] = useState({ base: 0, active: INITIAL_SLOT })
   const [stageWidth, setStageWidth] = useState(1120)
 
+  const { base, active: activeSlot } = windowState
+  const activePosition = base + activeSlot
   const cardWidth = Math.min(354, Math.max(230, stageWidth * 0.295))
   const cardGap = 26
   const step = cardWidth + cardGap
-  const targetX = stageWidth / 2 - cardWidth / 2 - activePosition * step
-  const trackX = useMotionValue(1120 / 2 - 330.4 / 2 - INITIAL_INDEX * (330.4 + cardGap))
+  const targetX = stageWidth / 2 - cardWidth / 2 - activeSlot * step
+  const trackX = useMotionValue(
+    1120 / 2 - 330.4 / 2 - INITIAL_SLOT * (330.4 + cardGap),
+  )
   const activeProject = projectAt(activePosition)
 
   useEffect(() => {
@@ -89,40 +90,53 @@ export function GradientCarousel() {
   }, [])
 
   useEffect(() => {
-    const version = ++animationVersion.current
     const controls = animate(
       trackX,
       targetX,
       reduceMotion
         ? { duration: 0 }
-        : { type: 'spring', stiffness: 145, damping: 27, mass: 0.82 },
+        : { type: 'spring', stiffness: 138, damping: 25, mass: 0.84 },
     )
+    return () => controls.stop()
+  }, [activeSlot, targetX, reduceMotion, trackX])
 
-    void controls.then(() => {
-      if (version !== animationVersion.current) return
+  const goTo = (requestedSlot: number) => {
+    let nextBase = base
+    let nextSlot = Math.max(0, Math.min(TRACK_ITEMS - 1, requestedSlot))
+    let shift = 0
 
-      // Rebase by a multiple of three: the visible artwork sequence remains identical.
-      if (activePosition >= REBASE_HIGH) {
-        trackX.jump(targetX + REBASE_OFFSET * step)
-        setActivePosition(activePosition - REBASE_OFFSET)
-      } else if (activePosition <= REBASE_LOW) {
-        trackX.jump(targetX - REBASE_OFFSET * step)
-        setActivePosition(activePosition + REBASE_OFFSET)
-      }
-    })
-
-    return () => {
-      animationVersion.current += 1
-      controls.stop()
+    while (nextSlot >= REBASE_HIGH) {
+      nextSlot -= REBASE_STEP
+      shift += REBASE_STEP
     }
-  }, [activePosition, targetX, reduceMotion, trackX, step])
 
-  const goTo = (position: number) => {
-    setActivePosition(Math.max(0, Math.min(TRACK_ITEMS - 1, position)))
+    while (nextSlot <= REBASE_LOW) {
+      nextSlot += REBASE_STEP
+      shift -= REBASE_STEP
+    }
+
+    if (shift !== 0) {
+      // Move the track by the same distance that the coordinate window shifts.
+      // Keys are global indices, so existing cards keep their DOM identity.
+      trackX.jump(trackX.get() + shift * step)
+      nextBase += shift
+    }
+
+    setWindowState({ base: nextBase, active: nextSlot })
   }
 
-  const goPrevious = () => goTo(activePosition - 1)
-  const goNext = () => goTo(activePosition + 1)
+  const goPrevious = () => goTo(activeSlot - 1)
+  const goNext = () => goTo(activeSlot + 1)
+
+  const snapToCurrent = () => {
+    animate(
+      trackX,
+      targetX,
+      reduceMotion
+        ? { duration: 0 }
+        : { type: 'spring', stiffness: 138, damping: 25, mass: 0.84 },
+    )
+  }
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return
@@ -152,7 +166,7 @@ export function GradientCarousel() {
     pointer.lastTime = now
 
     const distance = event.clientX - pointer.startX
-    if (Math.abs(distance) > 6) draggedRef.current = true
+    if (Math.abs(distance) > 5) draggedRef.current = true
     trackX.set(pointer.startTrackX + distance)
   }
 
@@ -161,8 +175,8 @@ export function GradientCarousel() {
     if (!pointer || pointer.id !== event.pointerId) return
 
     const distance = event.clientX - pointer.startX
-    const projectedX = trackX.get() + pointer.velocity * 180
-    const projectedIndex = Math.max(
+    const projectedX = trackX.get() + pointer.velocity * 210
+    const projectedSlot = Math.max(
       2,
       Math.min(
         TRACK_ITEMS - 3,
@@ -171,36 +185,18 @@ export function GradientCarousel() {
     )
 
     pointerRef.current = null
-    if (Math.abs(distance) > 6) draggedRef.current = true
+    if (Math.abs(distance) > 5) draggedRef.current = true
 
-    if (draggedRef.current) {
-      goTo(projectedIndex)
+    if (draggedRef.current && projectedSlot !== activeSlot) {
+      goTo(projectedSlot)
     } else {
-      const controls = animate(
-        trackX,
-        targetX,
-        reduceMotion
-          ? { duration: 0 }
-          : { type: 'spring', stiffness: 145, damping: 27, mass: 0.82 },
-      )
-      controls.then(() => {
-        draggedRef.current = false
-      })
+      snapToCurrent()
     }
   }
 
   const handlePointerCancel = () => {
     pointerRef.current = null
-    const controls = animate(
-      trackX,
-      targetX,
-      reduceMotion
-        ? { duration: 0 }
-        : { type: 'spring', stiffness: 145, damping: 27, mass: 0.82 },
-    )
-    controls.then(() => {
-      draggedRef.current = false
-    })
+    snapToCurrent()
   }
 
   const handleWheel = (event: ReactWheelEvent<HTMLDivElement>) => {
@@ -211,19 +207,19 @@ export function GradientCarousel() {
 
     event.preventDefault()
     const now = performance.now()
-    if (now - lastWheelRef.current < 380) return
+    if (now - lastWheelRef.current < 360) return
     lastWheelRef.current = now
 
     if (delta > 0) goNext()
     else goPrevious()
   }
 
-  const selectPosition = (position: number) => {
+  const selectPosition = (slot: number) => {
     if (draggedRef.current) {
       draggedRef.current = false
       return
     }
-    goTo(position)
+    goTo(slot)
   }
 
   const cssVars = {
@@ -276,12 +272,12 @@ export function GradientCarousel() {
           className="gradient-carousel__track"
           style={{ x: trackX, y: -cardWidth / 2 }}
         >
-          {Array.from({ length: TRACK_ITEMS }, (_, index) => {
-            const offset = index - activePosition
-            const project = projectAt(index)
+          {Array.from({ length: TRACK_ITEMS }, (_, slot) => {
+            const globalIndex = base + slot
+            const offset = slot - activeSlot
+            const project = projectAt(globalIndex)
             const distance = Math.abs(offset)
             const scale = distance === 0 ? 1 : distance === 1 ? 0.92 : distance === 2 ? 0.84 : 0.78
-
             const cardStyle = {
               width: cardWidth,
               height: cardWidth,
@@ -293,13 +289,13 @@ export function GradientCarousel() {
 
             return (
               <button
-                key={index}
+                key={globalIndex}
                 type="button"
                 className={`gradient-carousel__card ${distance === 0 ? 'is-active' : ''}`}
                 style={cardStyle}
                 aria-label={`${project.name}, ${distance === 0 ? 'selected' : 'select project'}`}
                 aria-pressed={distance === 0}
-                onClick={() => selectPosition(index)}
+                onClick={() => selectPosition(slot)}
                 tabIndex={distance <= 2 ? 0 : -1}
               >
                 <ProjectArtwork project={project} />
@@ -329,7 +325,7 @@ export function GradientCarousel() {
                 key={project.slug}
                 type="button"
                 className={`gradient-carousel__dot ${selectedIndex === index ? 'is-active' : ''}`}
-                onClick={() => goTo(activePosition + (Math.abs(forward) <= Math.abs(backward) ? forward : backward))}
+                onClick={() => goTo(activeSlot + (Math.abs(forward) <= Math.abs(backward) ? forward : backward))}
                 aria-label={`Show ${project.name}`}
                 aria-current={selectedIndex === index ? 'true' : undefined}
               />

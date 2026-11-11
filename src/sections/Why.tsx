@@ -1,6 +1,5 @@
 
 import { useLayoutEffect, useRef } from 'react'
-import { Reveal } from '../components/Reveal'
 import { principles } from '../data/services'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'

@@ -1,11 +1,9 @@
 import { ArrowUpRight } from "lucide-react";
-import { Link } from "react-router-dom";
 import { ProjectStage } from "../components/mockups/ProjectMockup";
 import { Reveal } from "../components/Reveal";
 import { projects } from "../data/projects";
 
 export function SelectedWork({ compact = false }: { compact?: boolean }) {
-  const list = compact ? projects : projects;
 
   return (
     <section id="work" className="bg-graphite">

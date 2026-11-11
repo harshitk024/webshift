@@ -3,7 +3,7 @@ import { ProjectStage } from "../components/mockups/ProjectMockup";
 import { Reveal } from "../components/Reveal";
 import { projects } from "../data/projects";
 
-export function SelectedWork({ compact = false }: { compact?: boolean }) {
+export function SelectedWork() {
 
   return (
     <section id="work" className="bg-graphite">

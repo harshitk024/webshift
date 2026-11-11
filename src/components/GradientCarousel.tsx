@@ -90,6 +90,7 @@ export function GradientCarousel() {
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return
 
+    event.currentTarget.setPointerCapture(event.pointerId)
     pointerRef.current = {
       x: event.clientX,
       trackX: trackX.get(),
@@ -123,7 +124,9 @@ export function GradientCarousel() {
     pointerRef.current = null
 
     if (Math.abs(distance) > Math.max(58, step * 0.19)) {
-      setActivePosition((position) => position + (distance < 0 ? 1 : -1))
+      const travelledCards = Math.max(1, Math.round(Math.abs(distance) / step))
+      const direction = distance < 0 ? 1 : -1
+      setActivePosition((position) => position + direction * Math.min(travelledCards, 2))
     } else {
       settleTrack()
     }

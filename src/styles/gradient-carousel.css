@@ -3,35 +3,34 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: 2.25rem 0 0;
+  padding: 1.25rem 0 0;
+  background: #090a0e;
   border: 1px solid rgb(255 255 255 / 7%);
-  border-radius: 1.5rem;
-  background:
-    radial-gradient(ellipse 62% 70% at 50% 42%, rgb(255 255 255 / 3%), transparent 76%),
-    #0d1319;
+  border-radius: 1.25rem;
 }
 
 .gradient-carousel__ambient {
   position: absolute;
   z-index: -1;
-  inset: 0;
+  inset: -12% -8% 0;
   overflow: hidden;
   pointer-events: none;
 }
 
 .gradient-carousel__ambient-layer {
   position: absolute;
-  inset: -12%;
-  filter: blur(18px);
+  inset: 0;
+  filter: blur(64px);
+  will-change: opacity, transform;
 }
 
 .gradient-carousel__stage {
   position: relative;
   width: 100%;
-  height: clamp(340px, 39vw, 455px);
+  height: clamp(340px, 38vw, 465px);
   overflow: hidden;
-  perspective: 1400px;
-  perspective-origin: 50% 45%;
+  perspective: 1300px;
+  perspective-origin: 50% 46%;
   touch-action: pan-y;
   user-select: none;
   cursor: grab;
@@ -41,119 +40,248 @@
   cursor: grabbing;
 }
 
-.gradient-carousel__card {
+.gradient-carousel__track {
   position: absolute;
   top: 50%;
   left: 50%;
-  display: block;
-  width: clamp(260px, 31vw, 360px);
-  aspect-ratio: 1 / 1.02;
-  overflow: hidden;
-  padding: 0;
-  border: 1px solid rgb(255 255 255 / 16%);
-  border-radius: 1.35rem;
-  color: var(--project-ink);
-  background:
-    radial-gradient(
-      circle at 82% 17%,
-      color-mix(in srgb, var(--project-accent) 62%, white) 0 13%,
-      transparent 13.5%
-    ),
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--project-paper) 92%, white) 0%,
-      var(--project-paper) 63%,
-      color-mix(in srgb, var(--project-accent) 22%, var(--project-paper)) 100%
-    );
-  box-shadow: 0 28px 75px -48px rgb(0 0 0 / 85%);
-  transform:
-    translate(-50%, -50%)
-    translateX(calc(var(--carousel-slot) * 108%))
-    rotateY(calc(var(--carousel-slot) * -21deg))
-    scale(var(--carousel-scale));
+  display: flex;
+  align-items: center;
+  gap: var(--card-gap, 26px);
+  width: max-content;
   transform-style: preserve-3d;
-  backface-visibility: hidden;
-  transition:
-    transform 760ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 760ms ease,
-    border-color 760ms ease,
-    filter 760ms ease;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  will-change: transform;
 }
 
-.gradient-carousel__card::after {
+.gradient-carousel__card {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 13%);
+  border-radius: 1.25rem;
+  background: #211044;
+  box-shadow: 0 28px 80px -38px rgb(0 0 0 / 82%);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  will-change: transform;
+}
+
+.gradient-carousel__card.is-active {
+  border-color: color-mix(in srgb, var(--carousel-accent) 52%, white);
+  box-shadow:
+    0 28px 90px -34px color-mix(in srgb, var(--carousel-accent) 45%, transparent),
+    0 22px 70px -42px rgb(0 0 0 / 90%);
+}
+
+.gradient-carousel__art {
+  --art-bg: linear-gradient(145deg, #3a0875, #15082e 82%);
+  --art-primary: #f52c70;
+  --art-secondary: #ffb51f;
+  --art-tertiary: #7025ea;
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: #fff;
+  background: var(--art-bg);
+}
+
+.gradient-carousel__art--jaswant {
+  --art-bg: linear-gradient(142deg, #3e087b 0%, #210747 54%, #120c35 100%);
+  --art-primary: #f32b63;
+  --art-secondary: #ff9b26;
+  --art-tertiary: #7b2be8;
+}
+
+.gradient-carousel__art--air {
+  --art-bg: linear-gradient(142deg, #32117d 0%, #1c1554 58%, #0c183e 100%);
+  --art-primary: #f45caa;
+  --art-secondary: #79d4f4;
+  --art-tertiary: #7652f7;
+}
+
+.gradient-carousel__art--solar {
+  --art-bg: linear-gradient(142deg, #421078 0%, #271052 52%, #150a38 100%);
+  --art-primary: #ff654f;
+  --art-secondary: #ffbf23;
+  --art-tertiary: #9028e8;
+}
+
+.gradient-carousel__art::before,
+.gradient-carousel__art::after {
   position: absolute;
-  inset: 0;
-  border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: inherit;
+  z-index: -1;
   content: '';
   pointer-events: none;
 }
 
-.gradient-carousel__card.is-active {
-  z-index: 3;
-  border-color: color-mix(in srgb, var(--project-accent) 60%, white);
-  box-shadow:
-    0 35px 90px -48px color-mix(in srgb, var(--project-accent) 54%, transparent),
-    0 24px 70px -46px rgb(0 0 0 / 90%);
-  cursor: default;
+.gradient-carousel__art::before {
+  width: 82%;
+  aspect-ratio: 1;
+  top: 7%;
+  right: -20%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 36% 34%, var(--art-secondary) 0 23%, transparent 24%),
+    radial-gradient(circle at 58% 62%, var(--art-primary) 0 55%, var(--art-tertiary) 75%);
+  filter: saturate(1.18);
 }
 
-.gradient-carousel__card:not(.is-active) {
+.gradient-carousel__art::after {
+  width: 145%;
+  height: 43%;
+  left: -25%;
+  bottom: 5%;
+  border-radius: 48% 52% 0 0;
+  background: linear-gradient(100deg, var(--art-primary), var(--art-tertiary) 78%);
+  transform: rotate(-23deg);
+  box-shadow: 0 -20px 50px color-mix(in srgb, var(--art-primary) 28%, transparent);
+}
+
+.gradient-carousel__art-shape {
+  position: absolute;
+  z-index: -1;
+  display: block;
+  pointer-events: none;
+}
+
+.gradient-carousel__art-shape--orb {
+  top: 13%;
+  left: -12%;
+  width: 58%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 68% 34%, var(--art-primary), var(--art-tertiary) 70%);
+  opacity: 0.88;
+}
+
+.gradient-carousel__art-shape--ring {
+  top: 15%;
+  left: 11%;
+  width: 78%;
+  height: 78%;
+  border: clamp(18px, 2.5vw, 34px) solid color-mix(in srgb, var(--art-primary) 88%, white);
+  border-bottom-color: transparent;
+  border-radius: 48% 48% 42% 42%;
+  transform: rotate(-19deg);
+  opacity: 0.72;
+}
+
+.gradient-carousel__art-shape--ribbon {
+  top: 43%;
+  left: -18%;
+  width: 138%;
+  height: 32%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--art-tertiary), var(--art-primary), var(--art-secondary));
+  transform: rotate(-35deg);
+  filter: blur(1px);
+  opacity: 0.75;
+}
+
+.gradient-carousel__art-shape--block {
+  top: -17%;
+  right: 7%;
+  width: 42%;
+  height: 66%;
+  border-radius: 48% 48% 4% 4%;
+  background: linear-gradient(165deg, var(--art-secondary), var(--art-primary));
+  transform: rotate(31deg);
+  mix-blend-mode: screen;
+  opacity: 0.75;
+}
+
+.gradient-carousel__art--air::before {
+  top: 10%;
+  right: -10%;
+  width: 94%;
+  background:
+    radial-gradient(ellipse at 22% 52%, var(--art-primary) 0 27%, transparent 28%),
+    radial-gradient(circle at 70% 30%, var(--art-secondary) 0 32%, var(--art-tertiary) 65%);
+}
+
+.gradient-carousel__art--air::after {
+  bottom: 18%;
+  height: 38%;
+  transform: rotate(21deg);
+}
+
+.gradient-carousel__art--solar::before {
+  top: -3%;
+  right: -18%;
+  width: 93%;
+  background:
+    radial-gradient(circle at 37% 38%, var(--art-secondary) 0 31%, transparent 32%),
+    radial-gradient(circle at 70% 70%, var(--art-primary), var(--art-tertiary) 78%);
+}
+
+.gradient-carousel__art--solar::after {
+  bottom: -8%;
+  height: 54%;
+  transform: rotate(16deg);
+}
+
+.gradient-carousel__art-grain {
+  position: absolute;
   z-index: 1;
-  filter: saturate(0.82) brightness(0.8);
+  inset: 0;
+  opacity: 0.12;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+  mix-blend-mode: soft-light;
+  pointer-events: none;
 }
 
-.gradient-carousel__card-top,
-.gradient-carousel__card-bottom {
+.gradient-carousel__art-header,
+.gradient-carousel__art-footer {
   position: absolute;
   z-index: 2;
-  right: 1.15rem;
-  left: 1.15rem;
+  right: 1.1rem;
+  left: 1.1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: color-mix(in srgb, var(--project-ink) 72%, transparent);
-  font-family: var(--font-sans);
-  font-size: 0.52rem;
+  text-shadow: 0 1px 18px rgb(0 0 0 / 22%);
+  pointer-events: none;
+}
+
+.gradient-carousel__art-header {
+  top: 1.1rem;
+  color: rgb(255 255 255 / 80%);
+  font-size: 0.54rem;
   font-weight: 600;
-  letter-spacing: 0.13em;
-  line-height: 1;
-  pointer-events: none;
+  letter-spacing: 0.15em;
 }
 
-.gradient-carousel__card-top {
-  top: 1.2rem;
-}
-
-.gradient-carousel__card-bottom {
-  bottom: 1.05rem;
-  text-transform: uppercase;
-}
-
-.gradient-carousel__card-mark {
-  display: grid;
-  width: 1.55rem;
-  height: 1.55rem;
-  place-items: center;
-  border-radius: 50%;
-  color: var(--project-paper);
-  background: var(--project-ink);
-  font-family: var(--font-display);
-  font-size: 0.7rem;
-  letter-spacing: -0.06em;
-}
-
-.gradient-carousel__mockup {
-  position: absolute;
-  top: 52%;
-  left: 50%;
+.gradient-carousel__art-footer {
+  right: 1.2rem;
+  bottom: 1.15rem;
+  left: 1.2rem;
   display: block;
-  width: 112%;
-  transform: translate(-50%, -50%) scale(0.91);
-  transform-origin: center;
-  pointer-events: none;
+  text-align: left;
+}
+
+.gradient-carousel__art-name {
+  display: block;
+  color: white;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.7vw, 2.05rem);
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 1.04;
+}
+
+.gradient-carousel__art-industry {
+  display: block;
+  margin-top: 0.35rem;
+  color: rgb(255 255 255 / 75%);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .gradient-carousel__controls {
@@ -163,15 +291,15 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  padding: 0.3rem 1rem 1.6rem;
+  padding: 0.2rem 1rem 1.25rem;
 }
 
 .gradient-carousel__arrow {
   display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.4rem;
+  height: 2.4rem;
   place-items: center;
-  border: 1px solid rgb(255 255 255 / 14%);
+  border: 1px solid rgb(255 255 255 / 16%);
   border-radius: 50%;
   color: var(--color-foam);
   background: rgb(255 255 255 / 4%);
@@ -184,7 +312,7 @@
 .gradient-carousel__arrow:hover {
   border-color: var(--carousel-accent);
   color: var(--carousel-accent);
-  background: rgb(255 255 255 / 7%);
+  background: rgb(255 255 255 / 8%);
 }
 
 .gradient-carousel__pagination {
@@ -199,14 +327,14 @@
   padding: 0;
   border: 0;
   border-radius: 99px;
-  background: rgb(255 255 255 / 32%);
+  background: rgb(255 255 255 / 34%);
   transition:
-    width 240ms ease,
-    background 240ms ease;
+    width 220ms ease,
+    background 220ms ease;
 }
 
 .gradient-carousel__dot.is-active {
-  width: 1.45rem;
+  width: 1.4rem;
   background: var(--carousel-accent);
 }
 
@@ -215,9 +343,9 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 2rem;
-  padding: 1.7rem clamp(1.25rem, 4vw, 3rem) 2rem;
+  padding: 1.45rem clamp(1.25rem, 4vw, 3rem) 1.8rem;
   border-top: 1px solid rgb(255 255 255 / 9%);
-  background: linear-gradient(180deg, rgb(8 13 18 / 30%), rgb(8 13 18 / 58%));
+  background: linear-gradient(180deg, rgb(8 13 18 / 22%), rgb(8 13 18 / 50%));
 }
 
 .gradient-carousel__caption-main {
@@ -293,54 +421,45 @@
 
 @media (max-width: 700px) {
   .gradient-carousel {
-    padding-top: 1.3rem;
-    border-radius: 1.1rem;
+    padding-top: 0.6rem;
+    border-radius: 1rem;
   }
 
   .gradient-carousel__stage {
-    height: 300px;
+    height: 320px;
     perspective: 1000px;
   }
 
   .gradient-carousel__card {
-    width: min(72vw, 310px);
     border-radius: 1.05rem;
-    transform:
-      translate(-50%, -50%)
-      translateX(calc(var(--carousel-slot) * 96%))
-      rotateY(calc(var(--carousel-slot) * -17deg))
-      scale(var(--carousel-scale));
   }
 
-  .gradient-carousel__card-top,
-  .gradient-carousel__card-bottom {
+  .gradient-carousel__art-header {
+    top: 0.85rem;
     right: 0.85rem;
     left: 0.85rem;
-    font-size: 0.43rem;
+    font-size: 0.46rem;
   }
 
-  .gradient-carousel__card-top {
-    top: 0.9rem;
+  .gradient-carousel__art-footer {
+    right: 0.9rem;
+    bottom: 0.9rem;
+    left: 0.9rem;
   }
 
-  .gradient-carousel__card-bottom {
-    bottom: 0.85rem;
+  .gradient-carousel__art-name {
+    font-size: 1.35rem;
   }
 
-  .gradient-carousel__mockup {
-    width: 118%;
-    transform: translate(-50%, -50%) scale(0.86);
-  }
-
-  .gradient-carousel__controls {
-    padding-bottom: 1.2rem;
+  .gradient-carousel__art-industry {
+    font-size: 0.58rem;
   }
 
   .gradient-carousel__caption {
     align-items: flex-start;
     flex-direction: column;
     gap: 1.15rem;
-    padding: 1.35rem 1.2rem 1.5rem;
+    padding: 1.3rem 1.2rem 1.45rem;
   }
 
   .gradient-carousel__summary {
@@ -353,7 +472,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gradient-carousel__card,
   .gradient-carousel__arrow,
   .gradient-carousel__dot,
   .gradient-carousel__link {

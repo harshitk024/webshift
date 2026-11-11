@@ -481,36 +481,7 @@
 @media (prefers-reduced-motion: reduce) {
   .gradient-carousel__arrow,
   .gradient-carousel__dot,
-  .gradient-carousel__link {
-    transition: none;
-  }
-}
-
-
-/* The whole row glides as one surface; cards only animate their 3D depth. */
-.gradient-carousel__stage {
-  overscroll-behavior: contain;
-}
-
-.gradient-carousel__track {
-  transform-style: preserve-3d;
-}
-
-.gradient-carousel__card {
-  transform-origin: center center;
-}
-
-
-.gradient-carousel__stage {
-  overscroll-behavior: contain;
-}
-
-.gradient-carousel__track {
-  backface-visibility: hidden;
-  transform-style: preserve-3d;
-}
-
-@media (prefers-reduced-motion: reduce) {
+  .gradient-carousel__link,
   .gradient-carousel__card {
     transition: none;
   }
@@ -524,10 +495,4 @@
 .gradient-carousel__track {
   backface-visibility: hidden;
   transform-style: preserve-3d;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .gradient-carousel__card {
-    transition: none;
-  }
 }

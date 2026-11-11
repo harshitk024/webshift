@@ -3,7 +3,7 @@ export type Project = {
   index: string
   name: string
   industry: string
-  type: 'Website concept'
+  type: 'Website concept' | 'Landing page website' | 'Personal portfolio'
   focus: string
   summary: string
   problem: string
@@ -11,7 +11,9 @@ export type Project = {
   pages: string[]
   accent: string
   ink: string
+  previewImage: string
   paper: string
+  liveUrl: string
 }
 
 export const projects: Project[] = [
@@ -35,48 +37,54 @@ export const projects: Project[] = [
     accent: '#E23B3B',
     ink: '#161616',
     paper: '#F4F1EA',
+    liveUrl: 'https://jaswant-telecom.netlify.app',
+    previewImage: ""
   },
   {
-    slug: 'northline-air',
+    slug: 'AstroVastu Consultancy',
     index: '02',
-    name: 'Northline Air',
-    industry: 'Home services',
-    type: 'Website concept',
-    focus: 'Service enquiries and WhatsApp contact',
+    name: 'AstroVastu Consultancy',
+    industry: 'Astro & Vastu',
+    type: 'Landing page website',
+    focus: 'Consultation enquiries and blog readership',
     summary:
-      'An AC repair concept organised around the job a customer actually has: cooling stopped, and they need a person to call.',
+      'A landing page for an astrology and Vastu consultancy, built so a visitor can understand the services, read the practitioner\u2019s published articles, and get in touch without hunting for a contact option.',
     problem:
-      'Home-service sites often bury the visit request under slogans. This concept keeps the service area, the kind of job, and a WhatsApp thread one decision apart.',
+      'Astrology and Vastu sites often lean on mystique and heavy visuals, which leaves a first-time visitor unsure what is actually offered or how to book. Blog posts end up hidden away, even though they are what builds trust before anyone makes contact.',
     approach: [
-      'Name the jobs in plain language: service, install, gas, not cooling.',
-      'Show the area covered before asking for a number.',
-      'Treat WhatsApp as a primary action, not a footer afterthought.',
+      'Open with a clear statement of what the consultancy offers: horoscope reading, Vastu assessment, and remedies.',
+      'Keep the contact form and enquiry details visible on the landing page, so reaching out is one step away.',
+      'Give the blog its own section and page, with recent articles previewed on the home page to show expertise.',
     ],
-    pages: ['Home', 'Services', 'Coverage', 'Book a visit'],
+    pages: ['Home', 'Services', 'Blog', 'Contact'],
     accent: '#3E6F8C',
     ink: '#14202A',
     paper: '#F3F6F7',
+    liveUrl: "https://www.astrovastuconsultancy.com/",
+    previewImage: ""
   },
-  {
-    slug: 'helio-field-solar',
+{
+    slug: 'Video Editor Portfolio',
     index: '03',
-    name: 'Helio Field Solar',
-    industry: 'Renewable energy',
-    type: 'Website concept',
-    focus: 'Business credibility and lead generation',
+    name: 'Portfolio',
+    industry: 'Video editing',
+    type: 'Personal portfolio',
+    focus: 'Showcasing work and attracting editing clients',
     summary:
-      'A solar installation concept that explains the offer calmly and asks for a site conversation instead of a hard sell.',
+      'A personal portfolio for Ashish, a video editor, built so a visitor can watch his best work within seconds and know how to hire him.',
     problem:
-      'Solar buyers are comparing trust as much as price. The page has to look established, describe the kinds of installation, and give one clear way to request a conversation.',
+      'Editors are judged by what they have cut, yet many portfolios bury the reel under long introductions or load heavy videos that never play. A client deciding between editors will not wait around, so the work has to be the first thing they see.',
     approach: [
-      'Open with what is installed and for whom, not with a slogan.',
-      'Separate home and small commercial paths.',
-      'Use a short lead panel instead of a long form on the first view.',
+      'Lead with a showreel at the top of the page, before any biography.',
+      'Group projects by type, such as YouTube, reels, ads, and weddings, so clients find relevant work quickly.',
+      'Keep a short enquiry panel and direct contact details visible, so hiring Ashish takes one step.',
     ],
-    pages: ['Home', 'Installations', 'How it works', 'Request a visit'],
+    pages: ['Home', 'Work', 'About', 'Contact'],
     accent: '#C9852A',
     ink: '#231C14',
     paper: '#F6F1E7',
+    liveUrl:"https://3d-videoportfolio.vercel.app/",
+    previewImage: ""
   },
 ]
 

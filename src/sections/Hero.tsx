@@ -1,4 +1,3 @@
-
 import { TextRotate } from "../components/text-rotate";
 import ProjectDeck from "../components/mockups/ProjectDeck";
 import { MagneticButton } from "../components/MagneticButton";
@@ -15,27 +14,38 @@ export function Hero() {
   ];
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-ink-line">
+    <section className="relative isolate overflow-hidden border-b border-white/10">
+      {/* ───────── BACKGROUND: gradient mesh + grid ───────── */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        {/* base wash */}
+        <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_80%_0%,rgba(91,33,182,0.28),transparent_55%),radial-gradient(90%_70%_at_0%_100%,rgba(37,99,235,0.18),transparent_60%)]" />
 
-      {/* Background glow */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-40 -top-40 -z-10 h-[550px] w-[550px] rounded-full bg-brand/10 blur-[130px]"
-      />
+        {/* glow orbs */}
+        <div className="absolute -right-32 -top-32 h-[560px] w-[560px] rounded-full bg-violet-600/25 blur-[140px]" />
+        <div className="absolute right-[18%] top-[45%] h-[360px] w-[360px] rounded-full bg-fuchsia-500/15 blur-[130px]" />
+        <div className="absolute -left-40 bottom-[-120px] h-[460px] w-[460px] rounded-full bg-sky-500/15 blur-[140px]" />
+
+        {/* fine grid, faded at the edges */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_40%,black,transparent)]" />
+
+        {/* bottom fade so the next section blends in */}
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/30 to-transparent" />
+      </div>
 
       <div className="relative mx-auto grid max-w-[1280px] items-center gap-12 px-6 py-16 md:px-10 md:py-20 lg:grid-cols-12 lg:px-16 lg:py-24">
-
-        {/* LEFT CONTENT */}
+        {/* ───────── LEFT CONTENT ───────── */}
         <div className="lg:col-span-7">
-
-          {/* Eyebrow */}
+          {/* Eyebrow: glass pill */}
           <motion.p
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mb-7 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.25em] text-brand"
+            className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-xs font-medium uppercase tracking-[0.22em] text-foam/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md"
           >
-            <span className="h-px w-8 bg-brand" />
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-fuchsia-400/60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-gradient-to-br from-sky-400 to-fuchsia-500" />
+            </span>
             Independent Digital Creative Studio
           </motion.p>
 
@@ -53,7 +63,7 @@ export function Hero() {
             {/* AUTOMATIC VERTICAL TEXT ROTATOR */}
             <TextRotate
               texts={roles}
-              mainClassName="mt-2 min-h-[1.2em] overflow-hidden text-brand-gradient"
+              mainClassName="mt-2 min-h-[1.2em] overflow-hidden bg-gradient-to-r from-sky-300 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent"
               splitLevelClassName="overflow-hidden pb-[0.08em]"
               elementLevelClassName="inline-block"
               splitBy="words"
@@ -77,7 +87,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="mt-8 max-w-xl text-base leading-8 text-foam/60 md:text-lg"
+            className="mt-8 max-w-xl text-base leading-8 text-foam/65 md:text-lg"
           >
             We design, create and manage digital experiences that help
             businesses build credibility, connect with customers and create
@@ -91,18 +101,15 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.35 }}
             className="mt-9 flex flex-wrap items-center gap-4"
           >
-            <MagneticButton href="/work">
-              Explore our work
-            </MagneticButton>
+            <MagneticButton href="/work">Explore our work</MagneticButton>
 
             <MagneticButton href="/contact" variant="ghost">
               Let's discuss your project
             </MagneticButton>
           </motion.div>
-
         </div>
 
-        {/* RIGHT: AUTO-SCROLLING PROJECT DECK */}
+        {/* ───────── RIGHT: PROJECT DECK ───────── */}
         <motion.div
           initial={{ opacity: 0, x: 35 }}
           animate={{ opacity: 1, x: 0 }}
@@ -111,15 +118,13 @@ export function Hero() {
         >
           <ProjectDeck />
         </motion.div>
-
       </div>
 
       {/* BOTTOM INDICATOR */}
-      <div className="relative mx-auto flex max-w-[1280px] items-center justify-between px-6 pb-8 text-[10px] uppercase tracking-[0.2em] text-foam/30 md:px-10 lg:px-16">
+      <div className="relative mx-auto flex max-w-[1280px] items-center justify-between px-6 pb-8 text-[10px] uppercase tracking-[0.2em] text-foam/35 md:px-10 lg:px-16">
         <span>Scroll to explore</span>
         <span>Mathura · India</span>
       </div>
-
     </section>
   );
 }

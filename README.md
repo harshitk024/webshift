@@ -42,6 +42,20 @@ public/           favicon, Open Graph image, sitemap, robots
 
 Design decisions live in `DESIGN_SPEC.md`.
 
+## React Bits Pro
+
+The shadcn registry configuration is in `components.json`. It registers both React Bits Pro registries and reads the authorization token from `REACTBITS_LICENSE_KEY`.
+
+1. Copy `.env.example` to `.env.local`.
+2. Replace the placeholder with your React Bits Pro license key. Keep `.env.local` local; it is ignored by Git.
+3. From the project root, install the Tailwind variant:
+
+```bash
+npx shadcn@latest add @reactbits-starter/gradient-carousel-tw
+```
+
+The installed component is expected at `src/components/react-bits/gradient-carousel.tsx`. The `@` alias and `src/lib/utils.ts` helper are configured for its imports.
+
 ## Configure before launch
 
 Edit `src/config/site.ts`:
@@ -56,7 +70,7 @@ Also update the canonical URL, Open Graph URL, `public/sitemap.xml`, and `public
 
 ## Contact form
 
-The form validates in the browser and then opens the visitor’s mail app with a `mailto:` draft (`Prepare email`). It does **not** submit to a server and does not pretend to.
+The form validates in the browser and then opens the visitor’s mail app with a `mailto:` draft (Prepare email). It does **not** submit to a server and does not pretend to.
 
 To make submission work without a mail app:
 

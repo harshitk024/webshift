@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async'
-import { SITE_URL } from "./seo"
+
+import { SITE_URL } from "./Seo"
 
 // Put <StructuredData /> once, on the Home page.
 export function StructuredData() {

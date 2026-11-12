@@ -1,7 +1,8 @@
 import { PageMeta } from '../components/PageMeta'
 import { SelectedWork } from '../sections/SelectedWork'
-import { Seo } from '../components/seo'
+import { Seo } from '../components/Seo'
 import { StructuredData } from '../components/StructuredData'
+
 export function WorkPage() {
   return (
     <>

@@ -8,7 +8,7 @@ import { Process } from '../sections/Process'
 import { SelectedWork } from '../sections/SelectedWork'
 import { Services } from '../sections/Services'
 import { Why } from '../sections/Why'
-import { Seo } from '../components/seo'
+import { Seo } from '../components/Seo'
 import { StructuredData } from '../components/StructuredData'
 
 export function HomePage() {

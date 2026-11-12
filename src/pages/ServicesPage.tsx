@@ -2,7 +2,7 @@ import { PageMeta } from '../components/PageMeta'
 import { Contact } from '../sections/Contact'
 import { Process } from '../sections/Process'
 import { Services } from '../sections/Services'
-import { Seo } from '../components/seo'
+import { Seo } from '../components/Seo'
 import { StructuredData } from '../components/StructuredData'
 
 export function ServicesPage() {

@@ -1,6 +1,6 @@
 import { PageMeta } from '../components/PageMeta'
 import { Contact } from '../sections/Contact'
-import { Seo } from '../components/seo'
+import { Seo } from '../components/Seo'
 import { StructuredData } from '../components/StructuredData'
 
 export function ContactPage() {

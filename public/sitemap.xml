@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://webshift.studio/</loc>
-  </url>
-  <url>
-    <loc>https://webshift.studio/work</loc>
-  </url>
-  <url>
-    <loc>https://webshift.studio/work/jaswant-telecom</loc>
-  </url>
-  <url>
-    <loc>https://webshift.studio/work/northline-air</loc>
-  </url>
-  <url>
-    <loc>https://webshift.studio/work/helio-field-solar</loc>
-  </url>
-  <url>
-    <loc>https://webshift.studio/services</loc>
-  </url>
-  <url>
-    <loc>https://webshift.studio/about</loc>
-  </url>
-  <url>
-    <loc>https://webshift.studio/contact</loc>
-  </url>
+  <url><loc>https://www.webshift.co.in/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://www.webshift.co.in/work</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.webshift.co.in/services</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.webshift.co.in/about</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.webshift.co.in/contact</loc><changefreq>yearly</changefreq><priority>0.8</priority></url>
 </urlset>

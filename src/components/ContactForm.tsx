@@ -10,6 +10,8 @@ type Fields = {
   description: string
 }
 
+type Status = 'idle' | 'sending' | 'success' | 'error'
+
 const empty: Fields = {
   name: '',
   business: '',
@@ -19,18 +21,25 @@ const empty: Fields = {
   description: '',
 }
 
+// Public access key from web3forms.com (safe to expose in frontend code).
+// Set VITE_WEB3FORMS_KEY in .env.local and in Vercel → Settings → Environment Variables.
+const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_KEY as string | undefined
+
 export function ContactForm() {
   const [fields, setFields] = useState<Fields>(empty)
   const [errors, setErrors] = useState<Partial<Record<keyof Fields, string>>>({})
-  const [ready, setReady] = useState(false)
+  const [status, setStatus] = useState<Status>('idle')
+  const [errorMessage, setErrorMessage] = useState('')
 
   function update<K extends keyof Fields>(key: K, value: Fields[K]) {
     setFields((current) => ({ ...current, [key]: value }))
-    setReady(false)
+    if (status !== 'sending') setStatus('idle')
   }
 
-  function onSubmit(event: FormEvent) {
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (status === 'sending') return
+
     const next: Partial<Record<keyof Fields, string>> = {}
     if (!fields.name.trim()) next.name = 'Add your name.'
     if (!fields.business.trim()) next.business = 'Add the business name.'
@@ -41,20 +50,59 @@ export function ContactForm() {
     setErrors(next)
     if (Object.keys(next).length > 0) return
 
-    const body = [
-      `Name: ${fields.name}`,
-      `Business: ${fields.business}`,
-      `Email: ${fields.email}`,
-      `Phone: ${fields.phone || '—'}`,
-      `Project type: ${fields.type}`,
-      '',
-      fields.description,
-    ].join('\n')
+    // Honeypot: real visitors never tick this hidden box, bots usually do.
+    const honeypot = (event.currentTarget.elements.namedItem('botcheck') as HTMLInputElement | null)
+      ?.checked
+    if (honeypot) return
 
-    window.location.href = `mailto:${site.contact.email}?subject=${encodeURIComponent(
-      `Project enquiry — ${fields.business}`,
-    )}&body=${encodeURIComponent(body)}`
-    setReady(true)
+    if (!ACCESS_KEY) {
+      setStatus('error')
+      setErrorMessage(
+        `The form isn't connected yet. Please email ${site.contact.email} directly.`,
+      )
+      return
+    }
+
+    setStatus('sending')
+    setErrorMessage('')
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: ACCESS_KEY,
+          subject: `Project enquiry — ${fields.business}`,
+          from_name: 'Webshift website',
+          // "email" is used by Web3Forms as the reply-to address
+          name: fields.name,
+          email: fields.email,
+          business: fields.business,
+          phone: fields.phone || '—',
+          project_type: fields.type,
+          message: fields.description,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (response.ok && result.success) {
+        setStatus('success')
+        setFields(empty)
+        setErrors({})
+      } else {
+        setStatus('error')
+        setErrorMessage(
+          result?.message ||
+            `Something went wrong. Please email ${site.contact.email} directly.`,
+        )
+      }
+    } catch {
+      setStatus('error')
+      setErrorMessage(
+        `Couldn't reach the server. Check your connection or email ${site.contact.email} directly.`,
+      )
+    }
   }
 
   const inputClass =
@@ -62,6 +110,16 @@ export function ContactForm() {
 
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-6">
+      {/* Honeypot (hidden from people, visible to bots) */}
+      <input
+        type="checkbox"
+        name="botcheck"
+        tabIndex={-1}
+        autoComplete="off"
+        className="hidden"
+        aria-hidden="true"
+      />
+
       <div className="grid gap-6 sm:grid-cols-2">
         <label className="block text-sm text-mist">
           Name
@@ -139,24 +197,33 @@ export function ContactForm() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <button
           type="submit"
-          className="inline-flex bg-lime px-5 py-3 text-sm font-medium text-graphite hover:bg-lime-deep"
+          disabled={status === 'sending'}
+          className="inline-flex items-center justify-center bg-lime px-5 py-3 text-sm font-medium text-graphite transition-opacity hover:bg-lime-deep disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Prepare email
+          {status === 'sending' ? 'Sending…' : 'Send message'}
         </button>
-        <a href={mailtoHref()} className="text-sm text-mist underline-offset-4 hover:text-foam hover:underline">
+        <a
+          href={mailtoHref()}
+          className="text-sm text-mist underline-offset-4 hover:text-foam hover:underline"
+        >
           Or email {site.contact.email} directly
         </a>
       </div>
 
-      <p className="max-w-xl text-sm leading-relaxed text-mist">
-        This form does not send on its own. Preparing the email opens your mail app with the
-        details filled in. A hosted form endpoint is not connected yet — see the README before
-        launch.
-      </p>
-      {ready && (
-        <p className="text-sm text-lime" role="status">
-          Your mail app should open with this enquiry. If it does not, email {site.contact.email}{' '}
-          directly.
+      {status === 'success' && (
+        <p
+          className="rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-lime"
+          role="status"
+        >
+          Thanks — your message has been sent. We'll get back to you soon.
+        </p>
+      )}
+      {status === 'error' && (
+        <p
+          className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300"
+          role="alert"
+        >
+          {errorMessage}
         </p>
       )}
     </form>

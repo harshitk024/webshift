@@ -99,9 +99,9 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.35 }}
             className="mt-9 flex flex-wrap items-center gap-4"
           >
-            <MagneticButton href="/work">Explore our work</MagneticButton>
+            <MagneticButton to="/work">Explore our work</MagneticButton>
 
-            <MagneticButton href="/contact" variant="ghost">
+            <MagneticButton to="/contact" variant="ghost">
               Let's discuss your project
             </MagneticButton>
           </motion.div>

@@ -7,7 +7,7 @@ export const site = {
   name: 'Webshift',
   wordmark: 'webshift',
   tagline: 'Better websites. Better business opportunities.',
-  url: 'https://webshift.studio',
+  url: 'https://webshift.co.in',
   description:
     'Webshift designs and develops modern websites that help local businesses build credibility, connect with customers, and create better opportunities online.',
 
@@ -18,11 +18,11 @@ export const site = {
   founderLabel: 'The person behind Webshift',
 
   contact: {
-    email: 'hello@webshift.studio',
+    email: 'hello@webshift.co.in',
     /** Digits only, including country code, no plus sign. Used for wa.me links. */
-    whatsapp: '910000000000',
-    whatsappDisplay: '+91 00000 00000',
-    phoneDisplay: '+91 00000 00000',
+    whatsapp: '917017765457',
+    whatsappDisplay: '+91 70177 65457',
+    phoneDisplay: '+91 70177 65457',
     location: 'Independent studio',
   },
 

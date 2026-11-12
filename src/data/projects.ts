@@ -12,6 +12,7 @@ export type Project = {
   accent: string
   ink: string
   previewImage: string
+  previewImageMobile: string
   paper: string
   liveUrl: string
 }
@@ -38,7 +39,9 @@ export const projects: Project[] = [
     ink: '#161616',
     paper: '#F4F1EA',
     liveUrl: 'https://jaswant-telecom.netlify.app',
-    previewImage: ""
+    previewImage: "../public/previews/jaswant.png",
+    previewImageMobile: "../public/previews/jaswant-mobile.png",
+
   },
   {
     slug: 'AstroVastu Consultancy',
@@ -61,7 +64,8 @@ export const projects: Project[] = [
     ink: '#14202A',
     paper: '#F3F6F7',
     liveUrl: "https://www.astrovastuconsultancy.com/",
-    previewImage: ""
+    previewImage: "../public/previews/astrovastu.png",
+    previewImageMobile: "../public/previews/astrovastu-mobile.png"
   },
 {
     slug: 'Video Editor Portfolio',
@@ -84,7 +88,8 @@ export const projects: Project[] = [
     ink: '#231C14',
     paper: '#F6F1E7',
     liveUrl:"https://3d-videoportfolio.vercel.app/",
-    previewImage: ""
+    previewImage: "../public/previews/ashish.png",
+    previewImageMobile: "../public/previews/ashish-mobile.png"
   },
 ]
 

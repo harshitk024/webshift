@@ -1,4 +1,3 @@
-
 import { useLayoutEffect, useRef } from 'react'
 import { principles } from '../data/services'
 import gsap from 'gsap'
@@ -60,11 +59,14 @@ export function Why() {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden border-t border-ink-line bg-graphite"
+      className="relative isolate overflow-hidden bg-graphite"
     >
-      {/* Decorative background elements */}
-      <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-lime/[0.04] blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 -left-32 h-96 w-96 rounded-full bg-lime/[0.03] blur-3xl" />
+      {/* Background: soft gradient + faint grid (cheap radial gradients, no blur filters) */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -right-40 -top-40 h-[560px] w-[560px] bg-[radial-gradient(closest-side,rgba(79,70,229,0.14),transparent)]" />
+        <div className="absolute -bottom-48 -left-40 h-[520px] w-[520px] bg-[radial-gradient(closest-side,rgba(14,165,233,0.10),transparent)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(ellipse_75%_70%_at_50%_50%,black,transparent)]" />
+      </div>
 
       <div className="relative mx-auto grid max-w-6xl gap-10 px-5 py-16 md:px-8 md:py-20 lg:grid-cols-12">
 

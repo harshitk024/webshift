@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { mailtoHref, site, whatsappHref } from '../config/site'
 import { services } from '../data/services'
+import logo from "../assets/webshift.png"
 
 export function Footer() {
   const year = new Date().getFullYear()
@@ -11,8 +12,11 @@ export function Footer() {
       <div className="mx-auto grid max-w-[1280px] gap-12 px-6 py-16 md:grid-cols-12 md:px-10 lg:px-16">
         <div className="md:col-span-4">
           <p className="font-display text-2xl font-semibold tracking-tight">
-            {site.wordmark}
-            <span className="text-lime">.</span>
+            <img
+            src={logo}
+            alt={site.wordmark}
+            className="h-8 w-auto md:h-16"
+          />
           </p>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-mist">{site.tagline}</p>
           <p className="mt-6 text-sm text-mist">{site.contact.location}</p>
